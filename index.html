@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caly y Diego</title>
+    <style>
+        :root {
+            --caro-purple: #9b59b6; 
+            --diego-gold: #d4af37;  
+            --bg-dark: #050505;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Playfair Display', serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- VIDEO DE FONDO LOCAL --- */
+        .video-background {
+            position: fixed;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            z-index: -2;
+            transform: translateX(-50%) translateY(-50%);
+            opacity: 0.25; /* Ajusta esto si lo quieres más claro u oscuro */
+            pointer-events: none;
+            object-fit: cover;
+        }
+
+        /* --- PANTALLA DE INICIO --- */
+        #start-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 1000; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer;
+        }
+        .play-btn {
+            font-size: 1.1rem; letter-spacing: 3px; color: var(--diego-gold);
+            border: 1px solid var(--diego-gold); padding: 15px 30px;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content { display: none; opacity: 0; transition: 1.5s; position: relative; z-index: 1; }
+        
+        @keyframes flashEffect { 0% { filter: brightness(3); } 100% { filter: brightness(1); } }
+        .flash-active { animation: flashEffect 1.5s ease-out; }
+
+        section { padding: 60px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        
+        /* --- CABECERA Y REPRODUCTOR --- */
+        .zodiac { display: flex; gap: 25px; font-size: 4.5rem; margin-bottom: 10px; }
+        .libra { color: var(--caro-purple); text-shadow: 0 0 20px var(--caro-purple); }
+        .sagi { color: var(--diego-gold); text-shadow: 0 0 20px var(--diego-gold); }
+        .music-player {
+            background: rgba(155, 89, 182, 0.1); border: 1px solid var(--diego-gold);
+            border-radius: 50px; padding: 10px 20px; margin: 20px 0;
+            display: flex; align-items: center; gap: 15px;
+        }
+        #current-song { font-size: 0.8rem; }
+
+        /* --- GALERÍA CON TEXTOS COMPLETOS --- */
+        .gallery { width: 95%; max-width: 900px; display: flex; flex-direction: column; gap: 50px; }
+        .gallery-item { display: flex; flex-direction: column; align-items: center; }
+        .img-container { width: 100%; border: 1px solid #333; aspect-ratio: 16/9; overflow: hidden; border-radius: 10px; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .caption { margin-top: 20px; font-size: 1rem; color: #ddd; line-height: 1.6; max-width: 800px; }
+
+        /* --- SECCIÓN DE LOGROS --- */
+        .achievements-section h3 { color: var(--diego-gold); letter-spacing: 3px; margin-bottom: 30px; }
+        .achievements-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; width: 90%; max-width: 900px;
+        }
+        .achievement-card {
+            background: rgba(155, 89, 182, 0.05); border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 20px; border-radius: 12px; opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out;
+        }
+        .achievement-card.reveal { opacity: 1; transform: translateY(0); }
+        .achievement-icon { color: var(--diego-gold); font-size: 1.5rem; margin-bottom: 10px; display: block; }
+        .achievement-title { font-size: 0.9rem; letter-spacing: 1px; color: var(--caro-purple); text-transform: uppercase; }
+
+        /* --- MENSAJE FINAL --- */
+        .message-box {
+            margin-top: 40px; border: 1px solid var(--caro-purple);
+            padding: 35px; max-width: 650px; background: rgba(0,0,0,0.8);
+            border-radius: 15px; line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen" onclick="startApp()">
+        <div class="play-btn">Entrar a nuestro mundo</div>
+    </div>
+
+    <video autoplay muted loop playsinline class="video-background">
+        <source src="fondo.mp4" type="video/mp4">
+    </video>
+
+    <div id="main-content" class="main-content">
+        <section>
+            <div class="zodiac">
+                <span class="libra">♎</span><span class="sagi">♐</span>
+            </div>
+            <h1 style="font-size: 2.8rem; letter-spacing: 5px; color: var(--diego-gold);">Caly y Diego</h1>
+            
+            <div class="music-player">
+                <span style="cursor:pointer" onclick="prevSong()">⏮</span>
+                <span id="current-song">Kate Bush - Running up that hill</span>
+                <span style="cursor:pointer" onclick="nextSong()">⏭</span>
+            </div>
+        </section>
+
+        <section>
+            <div class="gallery">
+                <div class="gallery-item">
+                    <div class="img-container"><img src="mobile_legends_victory.png"></div>
+                    <p class="caption">
+                        Nuestra primera victoria en mobile Legends, ¿Siempre hay una primera vez, no?<br>
+                        Esta primera vez de victoria ha sido maravillosa así como tú, Caly. 💗
+                    </p>
+                </div>
+
+                <div class="gallery-item">
+                    <div class="img-container"><img src="minecraft_dulcecaly.png"></div>
+                    <p class="caption">
+                        Nuestro mundito de Minecraft como así mismo lo que compartimos en el realm de Minecraft, es una muestra de que yo así como comparto ese mundo y ese servidor contigo así deseo compartir mi vida. 💗
+                    </p>
+                </div>
+
+                <div class="gallery-item">
+                    <div class="img-container"><img src="lirio_del_valle.png"></div>
+                    <p class="caption">
+                        Te gustan los lirios del valle, es verdad. 💗<br>
+                        Algo especial de ellos es que tienen en su nombre algo de lo que tú me haces sentir.
+                        Cuando hablamos y estamos juntos me haces sentir como en un valle de flores donde puedo ser feliz y me siento en paz, con suficiente placer el cual sin duda alguna agradezco de corazón.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="achievements-section" style="background: linear-gradient(0deg, rgba(5,5,5,0), rgba(155,89,182,0.05), rgba(5,5,5,0));">
+            <h3>Momentos que hemos hecho juntos</h3>
+            
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <span class="achievement-icon">🎮</span>
+                    <span class="achievement-title">Jugar Free Fire juntos</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">⚔️</span>
+                    <span class="achievement-title">Victorias en Mobile Legends</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🧱</span>
+                    <span class="achievement-title">Construir en Minecraft</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🏙️</span>
+                    <span class="achievement-title">Ver Arcane</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🌌</span>
+                    <span class="achievement-title">Ver Violet y Finch</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🎞️</span>
+                    <span class="achievement-title">Desde mi cielo</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">💍</span>
+                    <span class="achievement-title">La propuesta</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🐟</span>
+                    <span class="achievement-title">Big Fish</span>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">💐</span>
+                    <span class="achievement-title">La venganza de las damas de honor</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="message-box">
+                <h3 style="color: var(--diego-gold); letter-spacing: 3px; margin-bottom: 25px;">Para mi noble Carolina</h3>
+                <p style="white-space: pre-wrap; color: #eee; text-align: left;">
+Quiero que con esto te quede muy claro, eres una chica muy preciosa, hermosa y maravillosa, así como tú lo dijiste. Como verás todas las capturas de pantalla de Roblox están guardadas en el momento exacto, es decir en el momento que estábamos hablando.
+¿Te pareces a los narcisos?
+Sin duda alguna por tu belleza te pareces junto a los tulipanes.
+De hecho verás cuando mandaste un tulipán.
+Te quiero, deseo confesar que ahí me atrapaste. 
+Si algún día me voy antes de ti en vida o cualquier situación, volveré a ti en forma de gato, lo prometo.
+Te amo. 💗
+                </p>
+            </div>
+        </section>
+
+        <p style="text-align: center; opacity: 0.3; padding: 60px 0; font-size: 0.8rem;">Dedicado con todo mi amor a Carolina</p>
+    </div>
+
+    <audio id="player" loop></audio>
+
+    <script>
+        const songs = [
+            { name: "Kate Bush - Running up that hill", file: "running_up.mp3" },
+            { name: "Artemas - I like the way you kiss me", file: "artemas.mp3" },
+            { name: "Videoclub - Roi", file: "roi.mp3" },
+            { name: "Lana Del Rey - Video games", file: "video_games.mp3" },
+            { name: "The Marías - No one noticed", file: "no_one_noticed.mp3" }
+        ];
+        
+        let currentIdx = 0;
+        const audio = document.getElementById('player');
+
+        function startApp() {
+            document.getElementById('start-screen').style.display = 'none';
+            const main = document.getElementById('main-content');
+            main.style.display = 'block';
+            setTimeout(() => { 
+                main.style.opacity = '1'; 
+                main.classList.add('flash-active');
+                playSong(0);
+                // El video local se reproduce solo por el atributo 'autoplay' en la etiqueta video
+            }, 50);
+        }
+
+        function playSong(idx) {
+            currentIdx = idx;
+            audio.src = songs[idx].file;
+            document.getElementById('current-song').innerText = songs[idx].name;
+            audio.play();
+        }
+
+        function nextSong() { currentIdx = (currentIdx + 1) % songs.length; playSong(currentIdx); }
+        function prevSong() { currentIdx = (currentIdx - 1 + songs.length) % songs.length; playSong(currentIdx); }
+
+        // Animación de logros
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => { entry.target.classList.add('reveal'); }, index * 150);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.achievement-card').forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
